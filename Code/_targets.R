@@ -1,3 +1,29 @@
+# Steps to run.
+#   0. Download the data from the link provided in the README.md and place it in the data directory.
+#      1. Download all .tsv files in folder "DATA_SN" from https://massive.ucsd.edu/ProteoSAFe/dataset_files.jsp?task=74b20742b1334685bcea0bb139f79188#%7B%22table_sort_history%22%3A%22main.collection_asc%22%2C%22main.file_descriptor_input%22%3A%22.tsv%22%7D
+#      2. Download all .tsv files in folder "META" from https://drive.google.com/drive/folders/1jTkWFlCv78O-rPOVifhIrjjQskmfO2bR
+#   1. Update work_dir
+#   2. Update data_dir
+#   3. Run this script
+#   4. Run tar_make() to execute the pipeline
+#   5. Run processing.ipynb to generate anndata object
+
+############################## PATHS ###########################
+work_dir <- "/home/rasmus/rmls/work/ra/leduc2024/Single-nucleus-proteomics/Code"
+
+
+## Set the path to the data directory.
+# The directory should have structure:
+#   /DATA_SN
+#   /META
+data_dir <- "/home/rasmus/rmls/work/ra/leduc2024/Single-nucleus-proteomics/data"
+
+## Run pipeline:
+# tar_make()
+
+###############################################################
+
+setwd(work_dir)
 
 source("Functions.R")
 library(pacman)
@@ -9,10 +35,12 @@ pacman::p_load(eulerr, ggalt, ggbeeswarm, OrgMassSpecR, robustbase, plyr,
                ggpointdensity, viridis, scales, matrixStats, dplyr, targets,
                MASS, flux, psych, sva, ggExtra, gprofiler2, NCmisc, ggrepel, ggridges, rstatix, dtplyr,
                lawstat,lme4, lsmeans, boot,msEmpiRe,rsvd,enviPat,qs,PupillometryR,gtools,stats, plotly,
-               htmlwidgets,htmltools,gghalves,bayestestR,distributions)
+               htmlwidgets,htmltools,gghalves,bayestestR)
+
+# distributions
 
 ############ SINGLE
-SC_fpath <- "/work/slavov/JD/DATA_SN"
+SC_fpath <- paste(data_dir, "DATA_SN", sep="/")
 SC_fpath_Ext <- "/work/slavov/JD/DATA_SN_extracted"
 
 ############ BULK
@@ -27,7 +55,8 @@ bulk_nuc_siRNA_all_fpath <- "/work/slavov/JD/DATA_siRNA_nuc_new"
 bulk_WC_siRNA_all_fpath <- "/work/slavov/JD/DATA_siRNA_WC_new"
 
 ############ META
-meta_path <- "/work/slavov/JD/META/Meta_SC_SN_04122024_Prep1_2_3_6_final.tsv"
+# concat data_dir with the path to the meta file
+meta_path <- paste(data_dir, "META/Meta_SingleNuclei_06032024_Prep1_2_3_6_final.tsv", sep="/")
 meta_bulk_path_timsTOFSCP <- "/work/slavov/JD/META/Meta_THP1Bulk_01172024_timsTOFSCP.tsv"
 meta_bulk_path_timsTOFSCP_siRNA <- "/work/slavov/JD/META/Meta_THP1Bulk_siRNA_01222024_v3.tsv"
 
@@ -35,20 +64,21 @@ meta_bulk_path_timsTOFSCP_siRNA <- "/work/slavov/JD/META/Meta_THP1Bulk_siRNA_012
 HY_fpath <- "/work/slavov/JD/DATA_HY"
 
 
+
 ############ MISC:
-masses_fpath <- "/work/slavov/JD/Misc_files/uniprot_masses.tsv" # Protein mass info
-SP <- "/work/slavov/JD/Misc_files/swissprot_genes_10072023.tsv" # Swissprot info
-HL_path <- "/work/slavov/JD/Misc_files/SILAC_protein_turnOver/protein half lives high qual-Table 1.tsv" # Half life data
-markers_fpath <- "/work/slavov/JD/Misc_files/Subcellular_protein_07102022.tsv" # Subcellular protein markers
-NPC_regions <- "/work/slavov/JD/Misc_files/NUP_regions.tsv"
-NPC_scaffoldProts <- "/work/slavov/JD/Misc_files/NPC_scaffoldProts_Mathieson2018.tsv"
-all_TFs <- "/work/slavov/JD/Misc_files/TF_names_v_1.01.txt"
-all_TFs <- read.delim(all_TFs, header=F)
+#masses_fpath <- "/work/slavov/JD/Misc_files/uniprot_masses.tsv" # Protein mass info
+#SP <- "/work/slavov/JD/Misc_files/swissprot_genes_10072023.tsv" # Swissprot info
+#HL_path <- "/work/slavov/JD/Misc_files/SILAC_protein_turnOver/protein half lives high qual-Table 1.tsv" # Half life data
+#markers_fpath <- "/work/slavov/JD/Misc_files/Subcellular_protein_07102022.tsv" # Subcellular protein markers
+#NPC_regions <- "/work/slavov/JD/Misc_files/NUP_regions.tsv"
+#NPC_scaffoldProts <- "/work/slavov/JD/Misc_files/NPC_scaffoldProts_Mathieson2018.tsv"
+#all_TFs <- "/work/slavov/JD/Misc_files/TF_names_v_1.01.txt"
+#all_TFs <- read.delim(all_TFs, header=F)
 
-DA_TFs_to_label <- c("JUN","JUNB","FOS","NFKB1","NFKB2","REL","RELA","ATF3")
-NUPs_to_label <- c("TPR")
+#DA_TFs_to_label <- c("JUN","JUNB","FOS","NFKB1","NFKB2","REL","RELA","ATF3")
+#NUPs_to_label <- c("TPR")
 
-all_TFs <- all_TFs[all_TFs$V1%!in%DA_TFs_to_label,]
+#all_TFs <- all_TFs[all_TFs$V1%!in%DA_TFs_to_label,]
 
 
 nucleoporins <- c("NUP160","NUP85","SEH1L","NUP96","SEC13","NUP107","NUP133","NUP43","NUP37","ELYS","AHCTF1",
@@ -172,15 +202,13 @@ source_targets <- function(path) {
 }
 
 targets_list <- c(
-  source_targets("BulkSamples_targets.R"),
-  source_targets("SCoPEDIA_benchmarking_targets.R"),
-  source_targets("SingleNuclei_targets.R"),
-  source_targets("WriteTables_targets.R"),
-  source_targets("KnockDowns_targets.R"),
-  source_targets("SavePlots_targets.R")
+  #source_targets("BulkSamples_targets.R"),
+  #source_targets("SCoPEDIA_benchmarking_targets.R"),
+  source_targets("SingleNuclei_targets.R")
+  #source_targets("WriteTables_targets.R"),
+  #source_targets("KnockDowns_targets.R"),
+  #source_targets("SavePlots_targets.R")
 )
 
 targets_list <- unlist(targets_list, recursive = FALSE)
-
-targets_list
 
