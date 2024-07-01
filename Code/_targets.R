@@ -8,9 +8,12 @@
 #   4. Run tar_make() to execute the pipeline
 #   5. Run processing.ipynb to generate anndata object
 
-############################## PATHS ###########################
-work_dir <- "/home/rasmus/rmls/work/ra/leduc2024/Single-nucleus-proteomics/Code"
+############ SETUP
 
+# should only be true the first time you run the pipeline
+install_packages <- FALSE
+
+work_dir <- "/home/rasmus/rmls/work/ra/leduc2024/Single-nucleus-proteomics/Code"
 
 ## Set the path to the data directory.
 # The directory should have structure:
@@ -21,23 +24,51 @@ data_dir <- "/home/rasmus/rmls/work/ra/leduc2024/Single-nucleus-proteomics/data"
 ## Run pipeline:
 # tar_make()
 
-###############################################################
+############ Install dependencies
+
+if (install_packages) {
+  install.packages("devtools")
+  library(devtools)
+
+  install.packages("targets")
+  install.packages("BiocManager")
+  install.packages("qs")
+
+  install_github("https://github.com/vdemichev/diann-rpackage")
+  #install_github("zimmerlab/MS-EmpiRe")
+  install.packages("tidyft")
+}
+
+library(devtools)
+library(targets)
+library(stringi)
+library(stringr)
+library(tidyft)
+library(reshape2)
+library(data.table)
+library(diann)
+library(qs)
+library(plyr)
+library(dplyr)
+library(dtplyr)
+library(ggplot2)
+
+############ LOADING
 
 setwd(work_dir)
 
 source("Functions.R")
-library(pacman)
 print(Sys.time())
 
-pacman::p_load(eulerr, ggalt, ggbeeswarm, OrgMassSpecR, robustbase, plyr,
-               stringi, stringr, tidyr, patchwork, ggplot2, reshape2,
-               Cairo, gridGraphics, data.table, devtools, diann, gridExtra, ggpubr,
-               ggpointdensity, viridis, scales, matrixStats, dplyr, targets,
-               MASS, flux, psych, sva, ggExtra, gprofiler2, NCmisc, ggrepel, ggridges, rstatix, dtplyr,
-               lawstat,lme4, lsmeans, boot,msEmpiRe,rsvd,enviPat,qs,PupillometryR,gtools,stats, plotly,
-               htmlwidgets,htmltools,gghalves,bayestestR)
 
-# distributions
+#library(pacman)
+#pacman::p_load(eulerr, ggbeeswarm, OrgMassSpecR, robustbase, plyr,
+#               stringi, stringr, tidyr, patchwork, ggplot2, reshape2,
+#               Cairo, gridGraphics, data.table, devtools, diann, gridExtra, ggpubr,
+#               ggpointdensity, viridis, scales, matrixStats, dplyr, targets,
+#               MASS, flux, psych, sva, ggExtra, gprofiler2, NCmisc, ggrepel, ggridges, rstatix, dtplyr,
+#               lawstat,lme4, lsmeans, boot,rsvd,enviPat,qs,PupillometryR,gtools,stats, plotly,
+#               htmlwidgets,htmltools,gghalves,bayestestR, distributions)
 
 ############ SINGLE
 SC_fpath <- paste(data_dir, "DATA_SN", sep="/")
