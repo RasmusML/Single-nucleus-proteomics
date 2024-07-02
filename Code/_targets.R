@@ -13,13 +13,13 @@
 # should only be true the first time you run the pipeline
 install_packages <- FALSE
 
-work_dir <- "/home/rasmus/rmls/work/ra/leduc2024/Single-nucleus-proteomics/Code"
+work_dir <- "/home/rasmus/rmls/work/ra/derks2024/Single-nucleus-proteomics/Code"
 
 ## Set the path to the data directory.
 # The directory should have structure:
 #   /DATA_SN
 #   /META
-data_dir <- "/home/rasmus/rmls/work/ra/leduc2024/Single-nucleus-proteomics/data"
+data_dir <- "/home/rasmus/rmls/work/ra/derks2024/Single-nucleus-proteomics/data"
 
 ## Run pipeline:
 # tar_make()
