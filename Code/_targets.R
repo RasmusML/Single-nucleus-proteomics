@@ -9,10 +9,6 @@
 #   5. Run processing.ipynb to generate anndata object
 
 ############ SETUP
-
-# should only be true the first time you run the pipeline
-install_packages <- FALSE
-
 work_dir <- "/home/rasmus/rmls/work/ra/derks2024/Single-nucleus-proteomics/Code"
 
 ## Set the path to the data directory.
@@ -21,23 +17,7 @@ work_dir <- "/home/rasmus/rmls/work/ra/derks2024/Single-nucleus-proteomics/Code"
 #   /META
 data_dir <- "/home/rasmus/rmls/work/ra/derks2024/Single-nucleus-proteomics/data"
 
-## Run pipeline:
-# tar_make()
-
-############ Install dependencies
-
-if (install_packages) {
-  install.packages("devtools")
-  library(devtools)
-
-  install.packages("targets")
-  install.packages("BiocManager")
-  install.packages("qs")
-
-  install_github("https://github.com/vdemichev/diann-rpackage")
-  #install_github("zimmerlab/MS-EmpiRe")
-  install.packages("tidyft")
-}
+############ LOADING
 
 library(devtools)
 library(targets)
@@ -52,8 +32,6 @@ library(plyr)
 library(dplyr)
 library(dtplyr)
 library(ggplot2)
-
-############ LOADING
 
 setwd(work_dir)
 
