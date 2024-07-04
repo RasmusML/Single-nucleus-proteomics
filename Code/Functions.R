@@ -1083,7 +1083,8 @@ pD_car_norm_data <- function(dat, Run ="Run", seqcharge ="seqcharge", Celltype="
   dat$pep_run <- paste0(dat$Run,dat$seqcharge)
   datcar <- dat[grepl("Carrier", dat$Celltype),] %>% dplyr::select("pep_run",all_of(Quant)) %>%
     dplyr::rename("Carrier_MS1"=all_of(Quant)) %>% distinct(pep_run,.keep_all=T)
-  dat <- dat[!grepl("Carrier", dat$Celltype),] %>% distinct(seqcharge,run_chan,.keep_all=T)
+  #dat <- dat[!grepl("Carrier", dat$Celltype),] %>% distinct(seqcharge,run_chan,.keep_all=T)
+  dat <- dat %>% distinct(seqcharge,run_chan,.keep_all=T)
   dat_fin <- dat %>% left_join(datcar, by =c("pep_run"="pep_run"))
   dat_fin$pep_rat <- dat_fin[[Quant]]/dat_fin$Carrier_MS1
   dat_fin <- dat_fin[which(dat_fin$pep_rat>0 & dat_fin$pep_rat<Inf),]
